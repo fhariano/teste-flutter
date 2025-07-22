@@ -52,10 +52,7 @@ http://test.arianoti.com.br/
 
 ### Login para testes de acesso
 ```
-user: admin@example.com
-pwd: password
-
-user: user@example.com
+cpf: 37938138193 
 pwd: password
 ```
 
