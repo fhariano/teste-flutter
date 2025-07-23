@@ -1,42 +1,42 @@
-# test_flutter
+# 🚀 test_flutter
 Aplicação Web, Android e iOS para teste de vaga de desenvolvedor Flutter
 
-## 🚀 Funcionalidades
+## 🧩 Funcionalidades
 
 - ✅ CRUD de usuários.
 - ✅ Telas de Login e Registrar.
 - ✅ Login utilizando FIREBASE AUTHENTICATION com CPF/PASSWORD.
-- ✅ Checkbox: Lembrar Sempre.
-- ✅ Esqueci Minha Senha.
-- ✅ Redes sociais apenas como ícones ilustrativos.
+- ✅ Checkbox: Lembrar Sempre. (backlog)
+- ✅ Esqueci Minha Senha. (backlog)
+- ✅ Redes sociais apenas como ícones ilustrativos. (backlog)
 - ✅ Tela HOME com informações do usuário.
 - ✅ Área para COTAR e CONTRATAR seguros.
 - ✅ Seções: Minha Família e Contratados.
 - ✅ Menu lateral tipo DRAWER com AVATAR e informações do usuário.
 - ✅ Ao clicar no card "Automóvel", abre uma WebView com qualquer site externo.
 
-## 🐳 Deploy Local
+## 📦 Deploy Local
 
-### 1️⃣ Requisitos
+### Requisitos
 
 - SDK Flutter v. 3.32.7 (Stable)
 - Visual Studio Code
 
-### 2️⃣ Clone o projeto
+### 1️⃣ Clone o projeto
 
 ```
 git clone https://github.com/fhariano/teste-flutter.git
 cd teste-flutter
 ```
 
-### 3️⃣ Teste web: No terminal executar
+### 2️⃣ Teste web: No terminal executar
 
 ```
 flutter pub get
 flutter run -d chrome
 ```
 
-### 4️⃣ Teste Android
+### 3️⃣ Teste Android
 
 ```
 Instalar o Android Studio
@@ -45,12 +45,12 @@ Executar o emulador
 No VsCode selecionar o emulador criado e executar: Run Without Debugging
 ```
 
-### Acesso produção (válido até 01/08/2025 às 20h)
+### Acesso funcional p/ testes (válido até 01/08/2025 às 20h)
 ```
 http://test.arianoti.com.br/
 ```
 
-### Login para testes de acesso
+### Login para teste
 ```
 cpf: 37938138193 
 pwd: password
