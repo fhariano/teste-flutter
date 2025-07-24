@@ -57,8 +57,10 @@ pwd: password
 ```
 
 ### Observações:
-No pacote está incluso as credenciais do projeto no FIREBASE AUTHENTICATION, porém, isto não é uma boa prática de segurança, mas o acesso está restrito até 01/08/2025.
+1. No pacote está incluso as credenciais do projeto no FIREBASE AUTHENTICATION, porém, isto não é uma boa prática de segurança, mas o acesso está restrito até 01/08/2025.
 O procedimento seguro é, configurar o .git para não enviar as credenciais ao repositório e incluir neste documento README.MD o passo a passo de criação de uma aplicação no FIREBASE e a configuração necessária no projeto Flutter!
+
+2. Na função Esqueci Minha Senha ao receber o e-mail verificar também na caixa de SPAM!
 
 ## Getting Started with Flutter
 
