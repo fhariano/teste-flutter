@@ -5,74 +5,92 @@ import 'package:flutter/material.dart';
 import '../../data/models/user_model.dart';
 
 class AuthService with ChangeNotifier {
-  final prefsKey = 'user_model';
   final db = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
+  UserModel? user;
+  late int count;
 
-  Future<String> getUserFromFirestore(String cpf, String password) async {
-    late String result;
-    await db
+  Future getUserFromFirestore(String cpf) async {
+    final data = await db
         .collection("users")
         .where("cpf", isEqualTo: cpf)
-        .get()
-        .then(
-          (querySnapshot) {
-            if (querySnapshot.docs.isEmpty) {
-              result = "error";
-            }
-            for (var docSnapshot in querySnapshot.docs) {
-              tryLogin(docSnapshot.data()['email'], password);
-              result = "success";
-            }
-          },
-          onError: (e) {
-            result = "error";
-          },
-        );
-    return result;
+        .withConverter(
+          fromFirestore: UserModel.fromFirestore,
+          toFirestore: (UserModel userModel, _) => userModel.toFirestore(),
+        )
+        .get();
+
+    count = data.docs.length;
+    if (count > 0) {
+      user = data.docs.first.data();
+    }
   }
 
-  Future<String> tryLogin(String emailAddress, String password) async {
+  Future<Map<String, String>> tryLoginwithCpfFromFirestore(
+    String cpf,
+    String password,
+  ) async {
+    await getUserFromFirestore(cpf);
+
+    if (user?.email != null) {
+      return tryLogin(user!.email.toString(), password);
+    } else {
+      return {"msg": "error"};
+    }
+  }
+
+  Future<Map<String, String>> tryLogin(
+    String emailAddress,
+    String password,
+  ) async {
     try {
       await _auth.signInWithEmailAndPassword(
         email: emailAddress,
         password: password,
       );
 
-      return ('sucesso');
+      return {"msg": "success"};
     } on FirebaseAuthException catch (e) {
-      return getFBexception(e);
+      return {"msg": getFbException(e)};
     } catch (e) {
-      return e.toString();
+      return {"msg": e.toString()};
     }
   }
 
-  Future<String> tryRegister(UserModel userModel) async {
-    late String result;
+  Future<Map<String, String>> tryRegister(UserModel userModel) async {
+    late Map<String, String> result;
+
     try {
-      final UserCredential credential = await _auth
-          .createUserWithEmailAndPassword(
-            email: userModel.email!,
-            password: userModel.password!,
-          );
-      userModel.uid = credential.user!.uid;
-      await credential.user?.updateDisplayName(userModel.displayName);
-
-      await userModel.saveData();
-
-      result = "success";
+      await getUserFromFirestore(userModel.cpf.toString());
+      if (count == 0) {
+        await _auth
+            .createUserWithEmailAndPassword(
+              email: userModel.email!,
+              password: userModel.password!,
+            )
+            .then((UserCredential credential) async {
+              userModel.uid = credential.user!.uid;
+              await credential.user?.updateDisplayName(userModel.displayName);
+              await userModel.saveData();
+              result = {"msg": "success"};
+            });
+      } else {
+        return result = {"msg": "exists"};
+      }
     } on FirebaseAuthException catch (e) {
-      debugPrint(e.toString());
-      result = "error";
+      return {"msg": getFbException(e)};
     } catch (e) {
-      debugPrint(e.toString());
-      result = "error";
+      result = {"msg": "error"};
     }
 
     return result;
   }
 
-  String getFBexception(FirebaseAuthException e) {
+  Future<String> trySendResetPassword(String cpf) async {
+    return "";
+  }
+
+  String getFbException(FirebaseAuthException e) {
     switch (e.code) {
       case 'weak-password':
         return 'Sua senha é muito fraca.';

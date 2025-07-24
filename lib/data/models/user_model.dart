@@ -27,8 +27,10 @@ class UserModel {
   DocumentReference get firestoreRef =>
       FirebaseFirestore.instance.doc('users/$uid');
 
-  UserModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot,
-      SnapshotOptions? options) {
+  UserModel.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
     final data = snapshot.data();
     debugPrint('data: $data');
     uid = snapshot.id;
@@ -59,7 +61,9 @@ class UserModel {
     email = document['email'];
     cpf = document['cpf'] ?? '';
     if (document.data().toString().contains('address')) {
-      address = AddressModel.fromMap(document['address'] as Map<String, dynamic>);
+      address = AddressModel.fromMap(
+        document['address'] as Map<String, dynamic>,
+      );
     }
   }
 
@@ -68,8 +72,18 @@ class UserModel {
       'uid': uid,
       'email': email,
       if (address != null) 'address': address!.toMap(),
-      if(cpf != null) 'cpf': cpf, 
+      if (cpf != null) 'cpf': cpf,
     };
+  }
+
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      uid: map['uid'],
+      displayName: map['displayName'],
+      email: map['email'],
+      cpf: map['cpf'],
+      address: map['address'],
+    );
   }
 
   Future<void> setAddressModel(AddressModel address) async {

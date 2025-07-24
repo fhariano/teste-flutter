@@ -1,12 +1,13 @@
 // ignore_for_file: constant_identifier_names
 
-import 'package:brasil_fields/brasil_fields.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_social_button/flutter_social_button.dart';
 import 'package:provider/provider.dart';
-import 'package:test_flutter/core/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:brasil_fields/brasil_fields.dart';
+import 'package:flutter_social_button/flutter_social_button.dart';
+import '../../../core/services/auth_service.dart';
+import '../../../core/services/user_service.dart';
 
 import '../../../data/models/user_model.dart';
 
@@ -37,6 +38,7 @@ class AuthFormState extends State<AuthForm>
   Animation<Offset>? _slideAnimation;
 
   bool _isLogin() => _authMode == AuthMode.Login;
+  late bool _isSelected;
   // bool _isSignup() => _authMode == AuthMode.Signup;
   // Defining the focus node
   late FocusNode focusNode1 = FocusNode();
@@ -45,6 +47,8 @@ class AuthFormState extends State<AuthForm>
   late FocusNode focusNode4 = FocusNode();
   late FocusNode focusNode5 = FocusNode();
   late FocusNode focusNode6 = FocusNode();
+
+  late UserService userService;
 
   @override
   void initState() {
@@ -65,7 +69,15 @@ class AuthFormState extends State<AuthForm>
       end: const Offset(0, 0),
     ).animate(CurvedAnimation(parent: _controller!, curve: Curves.linear));
 
-    // _heightAnimation?.addListener(() {setState(() {});});
+    userService = Provider.of<UserService>(context, listen: false);
+    userService.initRememberedCredentials(cpfController, passwordController);
+    _loadCheckboxValue();
+  }
+
+  Future<void> _loadCheckboxValue() async {
+    setState(() {
+      _isSelected = userService.rememberMe; // Recover the saved value
+    });
   }
 
   @override
@@ -74,10 +86,9 @@ class AuthFormState extends State<AuthForm>
     _controller?.dispose();
   }
 
-  bool? _isSelected = false;
-
   @override
   Widget build(BuildContext context) {
+    final AuthService authService = Provider.of(context, listen: false);
     final deviceSize = MediaQuery.of(context).size;
 
     void switchAuthMode() {
@@ -124,29 +135,36 @@ class AuthFormState extends State<AuthForm>
 
       _formKey.currentState?.save();
 
-      // UserModel auth = Provider.of(context, listen: false);
-      AuthService authService = Provider.of(context, listen: false);
-
-      late String result;
+      late Map<String, String> result;
       try {
         if (_isLogin()) {
           // LOGIN
-          result = await authService.getUserFromFirestore(
+          result = await authService.tryLoginwithCpfFromFirestore(
             _authData.cpf!,
             _authData.password!,
           );
-          if (result == "error") {
+          if (result["msg"] == "error") {
             showErrorDialog("CPF não cadastrado ou senha inválida!");
+          } else {
+            userService.toggleRememberMe(_isSelected);
+            userService.saveCredentialsIfNeeded(
+              _authData.cpf!,
+              _authData.password!,
+            );
           }
         } else {
           // SIGNUP
           result = await authService.tryRegister(_authData);
-          if (result == "error") {
+          if (result["msg"] == "error") {
             showErrorDialog("CPF não cadastrado ou senha inválida!");
+          } else if (result["msg"] == "exists") {
+            showErrorDialog("CPF já utilizado por outro usuário!");
+          } else {
+            showErrorDialog(result["msg"].toString());
           }
         }
       } on FirebaseAuthException catch (error) {
-        showErrorDialog(error.toString());
+        showErrorDialog(error.code);
       } catch (error) {
         showErrorDialog('Ocorreu um erro inesperado!');
       }
@@ -297,7 +315,8 @@ class AuthFormState extends State<AuthForm>
                       FilteringTextInputFormatter.digitsOnly,
                       CpfInputFormatter(),
                     ],
-                    onSaved: (cpf) => _authData.cpf = cpf?.replaceAll(RegExp(r'[^0-9]'),'') ?? '',
+                    onSaved: (cpf) => _authData.cpf =
+                        cpf?.replaceAll(RegExp(r'[^0-9]'), '') ?? '',
                     validator: (cpf) {
                       if (cpf!.trim().isEmpty || !CPFValidator.isValid(cpf)) {
                         return 'Informe um cpf válido!';
@@ -395,44 +414,48 @@ class AuthFormState extends State<AuthForm>
                       _authMode == AuthMode.Login ? 'ENTRAR' : 'REGISTRAR',
                     ),
                   ),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: _isSelected,
-                      onChanged: (bool? newValue) {
-                        setState(() {
-                          _isSelected = newValue;
-                        });
-                      },
-                    ),
-                    Flexible(
-                      flex: 1,
-                      child: Text(
-                        'Lembrar Sempre',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            'Esqueci minha senha',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10,
+                ?_isLogin()
+                    ? Row(
+                        children: [
+                          Checkbox(
+                            value: _isSelected,
+                            onChanged: (bool? newValue) {
+                              _isSelected = newValue!;
+                              setState(() {
+                                if (cpfController.text.isNotEmpty &&
+                                    passwordController.text.isNotEmpty) {}
+                              });
+                            },
+                          ),
+                          Flexible(
+                            flex: 1,
+                            child: Text(
+                              'Lembrar Sempre',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                          Flexible(
+                            flex: 2,
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () {},
+                                child: const Text(
+                                  'Esqueci minha senha',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : null,
                 // const SizedBox(height: 8),
                 TextButton(
                   onPressed: switchAuthMode,
