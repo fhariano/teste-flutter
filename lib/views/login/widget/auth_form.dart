@@ -110,7 +110,7 @@ class AuthFormState extends State<AuthForm>
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text(
-            'Ocorreu um erro',
+            'Aviso!',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           content: Text(msg),
