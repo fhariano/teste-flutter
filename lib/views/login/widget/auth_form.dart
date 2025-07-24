@@ -459,7 +459,7 @@ class AuthFormState extends State<AuthForm>
                                       showErrorDialog("CPF não cadastrado!");
                                     } else {
                                       showErrorDialog(
-                                        "Mensagem de reset de senha enviada para o email cadastrado!",
+                                        "Mensagem de reset de senha enviada para o email cadastrado!\nVerifique também na pasta de SPAM!",
                                       );
                                     }
                                   }
