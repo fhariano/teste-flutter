@@ -90,13 +90,10 @@ class AuthService with ChangeNotifier {
   Future<Map<String, String>> trySendResetPassword(String cpf) async {
     late Map<String, String> result;
 
-    print("cpf: $cpf");
     await getUserFromFirestore(cpf);
-    print("count: $count");
 
     if (count > 0) {
       try {
-        print("email: ${user!.email.toString()}");
         await FirebaseAuth.instance.sendPasswordResetEmail(
           email: user!.email.toString(),
         );
