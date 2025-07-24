@@ -442,7 +442,28 @@ class AuthFormState extends State<AuthForm>
                             child: Align(
                               alignment: Alignment.centerRight,
                               child: TextButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  if (cpfController.text.isEmpty) {
+                                    showErrorDialog("Informe o CPF válido!");
+                                  } else {
+                                    Map<String, String> result =
+                                        await authService.trySendResetPassword(
+                                          cpfController.text.replaceAll(
+                                            RegExp(r'[^0-9]'),
+                                            '',
+                                          ),
+                                        );
+                                    if (result["msg"]!.contains('error')) {
+                                      showErrorDialog(result["msg"]!);
+                                    } else if (result["msg"] == "notExist") {
+                                      showErrorDialog("CPF não cadastrado!");
+                                    } else {
+                                      showErrorDialog(
+                                        "Mensagem de reset de senha enviada para o email cadastrado!",
+                                      );
+                                    }
+                                  }
+                                },
                                 child: const Text(
                                   'Esqueci minha senha',
                                   style: TextStyle(

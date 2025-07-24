@@ -5,15 +5,15 @@ Aplicação Web, Android e iOS para teste de vaga de desenvolvedor Flutter
 
 - ✅ CRUD de usuários.
 - ✅ Telas de Login e Registrar.
-- ✅ Login utilizando FIREBASE AUTHENTICATION com CPF/PASSWORD.
-- ✅ Checkbox: Lembrar Sempre. (backlog)
-- ✅ Esqueci Minha Senha. (backlog)
+- ✅ Login utilizando FIREBASE AUTHENTICATION com CPF/PASSWORD. (funcional)
+- ✅ Checkbox: Lembrar Sempre. (funcional)
+- ✅ Esqueci Minha Senha. (funcional)
 - ✅ Redes sociais apenas como ícones ilustrativos. (backlog)
 - ✅ Tela HOME com informações do usuário.
 - ✅ Área para COTAR e CONTRATAR seguros.
 - ✅ Seções: Minha Família e Contratados.
 - ✅ Menu lateral tipo DRAWER com AVATAR e informações do usuário.
-- ✅ Ao clicar no card "Automóvel", abre uma WebView com qualquer site externo.
+- ✅ Ao clicar no card "Automóvel", abrir uma WebView com qualquer site externo.
 
 ## 📦 Deploy Local
 

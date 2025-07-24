@@ -51,7 +51,8 @@ class AuthService with ChangeNotifier {
 
       return {"msg": "success"};
     } on FirebaseAuthException catch (e) {
-      return {"msg": getFbException(e)};
+      debugPrint('firebaseError: ${getFbException(e)}');
+      return {"msg": "error"};
     } catch (e) {
       return {"msg": e.toString()};
     }
@@ -86,8 +87,29 @@ class AuthService with ChangeNotifier {
     return result;
   }
 
-  Future<String> trySendResetPassword(String cpf) async {
-    return "";
+  Future<Map<String, String>> trySendResetPassword(String cpf) async {
+    late Map<String, String> result;
+
+    print("cpf: $cpf");
+    await getUserFromFirestore(cpf);
+    print("count: $count");
+
+    if (count > 0) {
+      try {
+        print("email: ${user!.email.toString()}");
+        await FirebaseAuth.instance.sendPasswordResetEmail(
+          email: user!.email.toString(),
+        );
+        result = {"msg": "success"};
+      } on FirebaseAuthException catch (e) {
+        return {"msg": "error ${getFbException(e)}"};
+      } catch (e) {
+        result = {"msg": "error"};
+      }
+    } else {
+      result = {"msg": "notExist"};
+    }
+    return result;
   }
 
   String getFbException(FirebaseAuthException e) {
