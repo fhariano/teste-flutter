@@ -13,6 +13,7 @@ Aplicação Web, Android e iOS para teste de vaga de desenvolvedor Flutter
 - ✅ Área para COTAR e CONTRATAR seguros.
 - ✅ Seções: Minha Família e Contratados.
 - ✅ Menu lateral tipo DRAWER com AVATAR e informações do usuário.
+- ✅ Botão para troca de tema: Escuro/Claro. (funcional)
 - ✅ Ao clicar no card "Automóvel", abrir uma WebView com qualquer site externo.
 
 ## 📦 Deploy Local
